@@ -1,11 +1,13 @@
-# Azure Alarm Notification Lab
+# Azure Iot Alarms, Notifications and Power BI Lab
 
 The following lab will take you through the steps of connecting
 [Azure IoT Hub](https://azure.microsoft.com/en-us/documentation/services/iot-hub/) D2C (Device to Cloud) telemetry to Notifications
 sent out through either [Azure Logic Apps](https://azure.microsoft.com/en-us/documentation/articles/app-service-logic-what-are-logic-apps/) or 
 [Microsoft Flow](https://flow.microsoft.com). We'll leverage [Azure Stream Analytics](https://azure.microsoft.com/en-us/services/stream-analytics/) 
 and [Azure Service Bus](https://azure.microsoft.com/en-us/services/service-bus/) to
-connect the IoT Hub telemetry to Logic Apps or Flow.
+connect the IoT Hub telemetry to Logic Apps or Flow. You'll also persist data from Stream Analytics into
+[Azure SQL](https://azure.microsoft.com/en-us/services/sql-database/). Finally, you'll leverage
+[Power BI](https://powerbi.microsoft.com/en-us/) to display both real-time and historical data.
 
 ## Table of Contents
 
@@ -13,18 +15,23 @@ connect the IoT Hub telemetry to Logic Apps or Flow.
 - [1.2 Before Starting](#12-before-starting)
     - [1.2.1 Azure Environment and Subscription](#121-azure-environment-and-subscription)
     - [1.2.2 Microsoft Flow](#122-microsoft-flow)
+    - [1.2.3 Software Requirements](#123-software-requirements)
 - [1.3 Create the Azure Service Bus Topic](#13-create-the-azure-service-bus-topic)
 - [1.4 Create the Azure Stream Analytics Job](#14-create-the-azure-stream-analytics-job)
 - [1.5 Create Notification Flow](#15-create-the-notification-flow)
     - [1.5.1 Using Azure Logic Apps](#151-using-azure-logic-apps)
     - [1.5.2 Using Microsoft Flow](#152-using-microsoft-flow)
+- [1.6 Persist Streaming Data into Azure SQL](#16-persist-streaming-data-into-azure-sql)
+- [1.7 Create a Power BI Dashboard and Report](#17-create-a-power-bi-dashboard-and-report)
 
 ## 1.1 Tutorial Overview
 
 In this tutorial, you'll be doing the following:
-- Creating an Azure Service Bus namespace and topic
+- Creating an Azure Service Bus namespace and topic.
 - Creating an Azure Stream Analytics job, leveraging Azure IoT Hub as an input and the Service Bus topic as an output.
 - Using Azure Logic Apps or Microsoft Flow to accept the message from Stream Analytics and notify an user of it.
+- Peristing streaming data into Azure SQL
+- Creating a Power BI dashboard leveraging both real-time and historical data
 
 ## 1.2 Before Starting
 
@@ -41,6 +48,12 @@ may change once Microsoft Flow is no longer in preview.
 
 Microsoft Flow is a good option for external business partners who are not using Microsoft Azure, and are unable to use Azure
 Logic Apps.
+
+### 1.2.3 Software Requirements
+
+- To create the Azure SQL table for historical data storage, you'll need Visual Studio.
+- The Power BI Desktop app is optional. This tutorial, however, will show how dashboards and reports can be created
+within the Power BI web portal.
 
 ## 1.3 Create the Azure Service Bus Topic
 
@@ -76,3 +89,9 @@ Endpoint=sb://sbtesting.servicebus.windows.net/;SharedAccessKeyName=RootManageSh
 ***
 **NOTE**: Make sure that the connection string is in one line (i.e. has no carriage returns) when you paste it in.
 ***
+
+## 1.6 Persist Streaming Data into Azure SQL
+
+- **Create the Azure SQL Server**
+
+## 1.7 Create a Power BI Dashboard and Report
