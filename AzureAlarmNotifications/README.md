@@ -64,12 +64,12 @@ Logic Apps.
 
 #### Add the Service Bus Topic
 
-[code language="text"]
+[code]
 Endpoint=ENDPOINT;SharedAccessKeyName=SHAREDACCESSKEYNAME;SharedAccessKey=SHAREDACCESSKEY
 [/code]
 
 So, an example connection string would look like this ...
 
-[code language="text"]
+[code]
 Endpoint=sb://sbtesting.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=UwMUwwvFsDQ6DCHUEYXFAqtivqJ2e1Rqy21hqZCPPSY=
 [/code]
