@@ -74,5 +74,5 @@ So, an example connection string would look like this ...
 Endpoint=sb://sbtesting.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=UwMUwwvFsDQ6DCHUEYXFAqtivqJ2e1Rqy21hqZCPPSY=
 ```
 ***
-**_NOTE_: Make sure there's the connection string is in one line (i.e. has no carriage returns).
+**NOTE**: Make sure that the connection string is in one line (i.e. has no carriage returns) when you paste it in.
 ***
