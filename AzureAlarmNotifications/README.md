@@ -23,11 +23,14 @@ connect the IoT Hub telemetry to Logic Apps or Flow. You'll also persist data fr
     - [1.6.1 Creating the Azure SQL Server and Database](#161-creating-the-azure-sql-server-and-database)
     - [1.6.2 Create the Azure SQL table to persist your IoT telemetry](#162-create-the-azure-sql-table-to-persist-your-iot-telemetry)
 - [1.7 Create the Azure Stream Analytics Job](#17-create-the-azure-stream-analytics-job)
-    - [1.7.1 Add an Input](#171-add-an-input)
-    - [1.7.2 Adding Outputs](#172-adding-outputs)
-        - [1.7.2.1 Add the Power BI Output](#1721-add-the-power-bi-output)
-        - [1.7.2.2 Add the Service Bus Output](#1722-add-service-bus-output)
-        - [1.7.2.3 Add the Azure SQL Output](#1723-add-the-azure-sql-output)
+    - [1.7.1 Create the Job](#171-create-the-job)
+    - [1.7.2 Add an Input](#172-add-an-input)
+    - [1.7.3 Adding Outputs](#173-adding-outputs)
+        - [1.7.3.1 Add the Power BI Output](#1731-add-the-power-bi-output)
+        - [1.7.3.2 Add the Service Bus Output](#1732-add-service-bus-output)
+        - [1.7.3.3 Add the Azure SQL Output](#1733-add-the-azure-sql-output)
+    - [1.7.4 Write the Query](#174-write-the-query)
+    - [1.7.5 Run the Job](#175-run-the-job)
 - [1.8 Create Notification Flow](#18-create-the-notification-flow)
     - [1.8.1 Using Azure Logic Apps](#181-using-azure-logic-apps)
     - [1.8.2 Using Microsoft Flow](#182-using-microsoft-flow)
@@ -159,6 +162,12 @@ If you've not already done so, you'll need to create the Azure SQL instance.
 
 It'll take a few minutes for the Deployment process to complete.
 
+- Once the Azure database has been created, open its blade.
+- Click the link below the Server Name field which will take you to the Azure SQL Server blade for your database.
+- Under Essentials, click the link below Firewall that says Show firewall settings.
+- Click the Add client IP button. This will add your current IP address to server firewall approved list, enabling you to
+connect to the database via Visual Studio or SQL Management Studio.
+
 #### 1.6.2 Create the Azure SQL table to persist your IoT telemetry
 
 (Use the [Azure Management Portal](https://portal.azure.com) for these steps.)
@@ -166,6 +175,7 @@ It'll take a few minutes for the Deployment process to complete.
 Use the following instructions if you plan to use Visual Studio. The instructions to leverage SQL Management Studio,
 are below these.
 
+**If using Visual Studio**
 - Select the Azure SQL Database that you created.
 - Near the top of the blade, click the Tools button.
 - In the Tools blade, click Open in Visual Studio.
@@ -187,25 +197,82 @@ are below these.
     in the database.
     - The status of the update operation is displayed in the Data Tools Operations window.
 
-#### Add Azure SQL as an output to an existing Stream Analytics Job
-
-
+**If using SQL Management Studio**
+- In the Connect to Server dialog, enter values in the following fields:
+    - Server type: Should be defaulted to Database Engine.
+    - Server name: Enter the SQL Server server name. You'll be able to find this on the Azure SQL Database blade. It should
+    follow this format: [server name].database.windows.net
+    - Authentication:
+        - Login: Enter the Azure SQL username you entered when first creating the Azure SQL database.
+        - Password: Enter the associated password.
+    - Click the connect button.
+- In the Object Explorer window, expand the node under your database > Tables.
+- Write-click the Tables node and select New > Table.
+- In the dbo.Table window which now opens, create the columns for your table.
+    - **NOTE**: If you plan to create a query with a "SELECT *" clause, you'll need to know precisely the schema of your input telemetry
+        in the Stream Analytics job. If your table schema does not match it (including the ordinal position of columns), the 
+        Stream Analytics job will fail in persisting data to your SQL database.
+    - Click the Save button and enter the name that you'd like to call the table.
 
 ## 1.7 Create the Azure Stream Analytics Job
-(Currently, this is easiest to accomplish in the old [Azure Management Portal](https://manage.windowsazure.com))
+(Currently, these steps are easiest (and for Stream Analytics, best) to accomplish in the old 
+[Azure Management Portal](https://manage.windowsazure.com))
 
-### Create the Job
+### 1.7.1 Create the Job
+- In the left hand menu, select Stream Analytics.
+- In the lower left hand corner, click the +New icon.
+- Select Stream Analytics > Quick Create and complete the following fields:
+    - Job name: Provide a name for the Stream Analytics job.
+    - Region: Select the appropriate Microsoft Data Center location.
+    - Regional Monitoring Storage Account: Depending upon your selected region, you'll be able to select a storage account
+    for Stream Analytics to store service monitoring data. It's ok if this isn't available in your region.
+- Click the Create Stream Analytics job checkmark.
 
-### 1.7.1 Add an input
+The job will take a few minutes to deploy, after which you can select it your list of Stream Analytics jobs by clicking
+the arrow next to its name.
 
-### 1.7.2 Adding Outputs
+### 1.7.2 Add an input
+- After selecting the job in Stream Analytics list, select Inputs.
+- Click the Add Input icon in the bottom menu.
+- In the Add an Input dialog, complete the following:
+    - Select Data Stream and click the right arrow.
+    - Select IoT Hub and click the right arrow.
+    - In IoT Hub settings, complete the following fields:
+        - Input Alias: Provide an alias for your input which you'll use to refer to it in your query.
+        - Subscription: Select the appropriate Azure subscription.
+        - Choose an IoT Hub: You should be able to select from a dropdown of existing IoT Hub instances. This will
+        then provide default values for the remaining fields.
+    - Click the right arrow.
+    - Review serialization settings and click the complete checkmark icon.
 
-#### 1.7.2.1 Add the Power BI Output
+### 1.7.3 Adding Outputs
+To add Ouputs to your Stream Analytics job, you'll need to be in the Job and then click Outputs.
 
-#### 1.7.2.2 Add the Service Bus Output
+#### 1.7.3.1 Add the Power BI Output
+- In the bottom menu, click the Add Output icon.
+- Select Power BI, and click the right arrow icon.
+- In Authorize Connection, click the Authorize Now link and enter the credentials for the Office 365 account you wish
+to use for Power BI. Ensure you click the Sign-In button and that your credentials are successfully authorized and accepted.
+- In Microsoft Power BI Settings, complete the following fields:
+    - Output alias: Provide an alias for your output which you'll use to refer to it in your query.
+    - Dataset name: Provide a name of your dataset to be created in Power BI.
+    - Table name: Provide a name of your table to be created in the dataset.
+    - Workspace: Select the workspace in Power BI where the dataset and table will be created.
+    - Click the checkmark icon to complete.
 
+#### 1.7.3.2 Add the Service Bus Output
+- In the bottom menu, click the Add Output icon.
+- Select Service Bus Topic, and click the right arrow icon.
+- In Topic Settings, complete the following fields:
+    - Output alias: Provide an alias for your output which you'll use to refer to it in your query.
+    - Subscription: Select the appropriate Azure subscription.
+    - Choose a Namespace: After selecting the Azure subscription, you should receive a dropdown of existing namespaces
+    to select from. Select the correct namespace you created earlier for this purpose.
+    - Choose a Topic: Select the existing Topic associated to the selected namespace.
+    - Topic Policy Name: This value should have a default value.
+- Review Serialization Settings and click the checkmark icon to complete.
 
-#### 1.7.2.3 Add the Azure SQL Output
+#### 1.7.3.3 Add the Azure SQL Output
 **TIP**: If you're unsure of the exact schema of input data from Azure IoT Hub, it's helpful to leverage Azure Stream Analytics to briefly
 output telemetry to a BLOB container in Azure storage. This will enable you to see the schema and ensure your data output to Azure SQL
 is mapped properly from your Azure Stream Analytics job. Additionally, this will provide you test data to test your Stream Analytics
@@ -223,7 +290,42 @@ query.
     - Username: Enter the username for the Azure SQL server.
     - Password: Enter the password for the Azure SQL server.
 
-### Write the Query
+### 1.7.4 Write the Query
+To write/edit your query, you'll need to be in the Stream Analytics Job and then click Query. While you can certainly use
+the Management Portal query window to write and edit your query, I find it a best practice to leverage a tool like
+[Visual Code](https://code.visualstudio.com) to write your query first, especially because I can leverage a source control
+platform like GitHub to place it under source control.
+
+Here's a sample query that leverages all three outputs described in this lab:
+
+```sql
+With RawTelemetryGroupedByMinute AS (
+    SELECT
+        DeviceId, 
+        DateAdd(hour, -7, System.TimeStamp) as EventDateTime,
+        Avg(Temperature) As Temperature, 
+        Avg(Humidity) As Pressure
+    FROM
+        iothub TIMESTAMP BY EventProcessedUtcTime  
+    Group By DeviceId, PumpNo, TumblingWindow(minute, 1)
+),
+Alarms AS (
+    SELECT DeviceId, 'HighTemperatureAlarm' As AlarmType,
+    CONCAT('High Temperature identified on Device ', DeviceId, ' [Pump #', PumpNo, '] over last 10 minutes.') as AlarmDetail,
+    DateAdd(minute, -10, DateAdd(hour, -7, System.TimeStamp)) As WindowStart,
+    DateAdd(hour, -7, System.TimeStamp) AS WindowEnd, COUNT(*) AS EventCount, 10 AS WindowDurationInMinutes
+    FROM iothub TIMESTAMP BY EventProcessedUtcTime
+    WHERE Temperature > 90
+    GROUP BY DeviceId, TumblingWindow(Duration(minute, 10)) 
+    HAVING EventCount > 2
+)
+
+select * into powerbi from RawTelemetryGroupedByMinute
+select * into sql from RawTelemetryGroupedByMinute
+select * into servicebusalarm from Alarms
+```
+
+### 1.7.5 Run the Job
 
 ## 1.8 Create the Notification Flow
 
