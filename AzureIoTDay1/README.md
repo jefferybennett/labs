@@ -93,13 +93,63 @@ If you've not already provisioned an instance of the Azure IoT Hub that you can 
 
 ## 1.x Use the Azure IoT Device Explorer to Register your Device
 
-- Download and install the [Azure IoT Device Explorer](https://github.com/Azure/azure-iot-sdk-csharp/tree/master/tools/DeviceExplorerhttps://github.com/Azure/azure-iot-sdks/releases/download/2016-11-17/SetupDeviceExplorer.msi)
+- Download and install the [Azure IoT Device Explorer](https://github.com/Azure/azure-iot-sdks/releases/download/2016-11-17/SetupDeviceExplorer.msi)
 - Open the Device Explorer.
-- In your IoT Hub's blade in the Azure Management Portal, click SH
+- In your IoT Hub's blade in the Azure Management Portal, click the Shared Access Policies tab.
+- Click the "iothubowner" policy.
+- Copy the primary Connection string.
+- Paste the connection string in the IoT Hub Connection String field on the Configuration tab of the Device Explorer
+and click the Update button.
+- On the Management Tab, click the Create button.
+- Provide a Device ID and click the Create button.
+- Your device is now registered with Azure IoT Hub.
 
 ## 1.x Create the .Net Windows Form IoT Device Simulator
 If your lab does not include an actual IoT device, the following Device Simulator will assist you in understanding 
-the core concepts of devices send data to Azure IoT Hub and receive 
+the core concepts of devices send data to Azure IoT Hub and receive commands. These instructions assume a working familiarity
+with Visual Studio.
+
+- Open Visual Studio and create a new Windows Form project.
+- Using the Nuget Package Manager, install the package "Microsoft.Azure.Devices.Client".
+- Add fields or variables for the telemetry values you wish to send. The following exercises use the telemetry attributes "Temperature"
+and "Humidity".
+- Add a button to send telemetry.
+- Add the Using statements for Microsoft.Azure.Devices, Microsoft.Azure.Devices.Client, and Newtonsoft.Json.
+- Add a simple class to represent the data you'll send in a telemetry message, such as the following:
+```csharp
+    public class IoTDeviceTelemetryMessage
+    {
+        public decimal Temperature { get; set; }
+        public decimal Humidity { get; set; }
+    }
+```
+- Add a method like the following to send the telemetry and wire to your event handler:
+```csharp
+        private async Task<bool> SendTelemetry(decimal temperature, decimal humidity)
+        {
+            DeviceClient deviceClient;
+            string messageString;
+            Microsoft.Azure.Devices.Client.Message message;
+
+            deviceClient = DeviceClient.Create(TextboxIoTHubHostname.Text,
+                new DeviceAuthenticationWithRegistrySymmetricKey(
+                    TextboxDeviceId.Text,
+                    TextboxPrimaryKey.Text));
+
+            IoTDeviceTelemetryMessage telemetry = new IoTDeviceTelemetryMessage
+            {
+                Temperature = temperature,
+                Humidity = humidity
+            };
+
+            messageString = JsonConvert.SerializeObject(telemetry);
+            message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
+
+            await deviceClient.SendEventAsync(message);
+
+            return true;
+        }
+```
 
 
 
