@@ -40,6 +40,8 @@
             this.TextboxHumidity = new System.Windows.Forms.TextBox();
             this.ButtonSendOnce = new System.Windows.Forms.Button();
             this.LabelSendStatus = new System.Windows.Forms.Label();
+            this.ButtonConnectDevice = new System.Windows.Forms.Button();
+            this.TextBoxReceivedCommands = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // TextboxDeviceId
@@ -103,7 +105,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Calibri", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(30, 227);
+            this.label4.Location = new System.Drawing.Point(30, 333);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(154, 33);
             this.label4.TabIndex = 7;
@@ -112,7 +114,7 @@
             // TextBoxTemperature
             // 
             this.TextBoxTemperature.Font = new System.Drawing.Font("Calibri", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TextBoxTemperature.Location = new System.Drawing.Point(286, 224);
+            this.TextBoxTemperature.Location = new System.Drawing.Point(286, 330);
             this.TextBoxTemperature.Name = "TextBoxTemperature";
             this.TextBoxTemperature.Size = new System.Drawing.Size(153, 40);
             this.TextBoxTemperature.TabIndex = 6;
@@ -122,7 +124,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Calibri", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(30, 273);
+            this.label5.Location = new System.Drawing.Point(30, 379);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(115, 33);
             this.label5.TabIndex = 9;
@@ -131,7 +133,7 @@
             // TextboxHumidity
             // 
             this.TextboxHumidity.Font = new System.Drawing.Font("Calibri", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TextboxHumidity.Location = new System.Drawing.Point(286, 270);
+            this.TextboxHumidity.Location = new System.Drawing.Point(286, 376);
             this.TextboxHumidity.Name = "TextboxHumidity";
             this.TextboxHumidity.Size = new System.Drawing.Size(153, 40);
             this.TextboxHumidity.TabIndex = 8;
@@ -139,8 +141,9 @@
             // 
             // ButtonSendOnce
             // 
+            this.ButtonSendOnce.Enabled = false;
             this.ButtonSendOnce.Font = new System.Drawing.Font("Calibri", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonSendOnce.Location = new System.Drawing.Point(286, 340);
+            this.ButtonSendOnce.Location = new System.Drawing.Point(286, 446);
             this.ButtonSendOnce.Name = "ButtonSendOnce";
             this.ButtonSendOnce.Size = new System.Drawing.Size(160, 58);
             this.ButtonSendOnce.TabIndex = 10;
@@ -152,17 +155,38 @@
             // 
             this.LabelSendStatus.AutoSize = true;
             this.LabelSendStatus.Font = new System.Drawing.Font("Calibri", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelSendStatus.Location = new System.Drawing.Point(468, 353);
+            this.LabelSendStatus.Location = new System.Drawing.Point(468, 459);
             this.LabelSendStatus.Name = "LabelSendStatus";
             this.LabelSendStatus.Size = new System.Drawing.Size(0, 33);
             this.LabelSendStatus.TabIndex = 11;
+            // 
+            // ButtonConnectDevice
+            // 
+            this.ButtonConnectDevice.Font = new System.Drawing.Font("Calibri", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ButtonConnectDevice.Location = new System.Drawing.Point(286, 185);
+            this.ButtonConnectDevice.Name = "ButtonConnectDevice";
+            this.ButtonConnectDevice.Size = new System.Drawing.Size(160, 58);
+            this.ButtonConnectDevice.TabIndex = 12;
+            this.ButtonConnectDevice.Text = "Connect Device";
+            this.ButtonConnectDevice.UseVisualStyleBackColor = true;
+            this.ButtonConnectDevice.Click += new System.EventHandler(this.ButtonConnectDevice_Click);
+            // 
+            // TextBoxReceivedCommands
+            // 
+            this.TextBoxReceivedCommands.Location = new System.Drawing.Point(286, 544);
+            this.TextBoxReceivedCommands.Multiline = true;
+            this.TextBoxReceivedCommands.Name = "TextBoxReceivedCommands";
+            this.TextBoxReceivedCommands.Size = new System.Drawing.Size(660, 172);
+            this.TextBoxReceivedCommands.TabIndex = 13;
             // 
             // DeviceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1574, 815);
+            this.ClientSize = new System.Drawing.Size(1326, 906);
+            this.Controls.Add(this.TextBoxReceivedCommands);
+            this.Controls.Add(this.ButtonConnectDevice);
             this.Controls.Add(this.LabelSendStatus);
             this.Controls.Add(this.ButtonSendOnce);
             this.Controls.Add(this.label5);
@@ -196,6 +220,8 @@
         private System.Windows.Forms.TextBox TextboxHumidity;
         private System.Windows.Forms.Button ButtonSendOnce;
         private System.Windows.Forms.Label LabelSendStatus;
+        private System.Windows.Forms.Button ButtonConnectDevice;
+        private System.Windows.Forms.TextBox TextBoxReceivedCommands;
     }
 }
 

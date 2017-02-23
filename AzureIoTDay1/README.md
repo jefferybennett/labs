@@ -1,31 +1,6 @@
 # Azure IoT Day 1 Lab: IoT Telemetry, Commands, Stream Analytics, Power BI and Business Events / Notifications
 
-## Table of Contents
-
-- [1.2 Before Starting](#12-before-starting)
-    - [1.2.1 Azure Environment and Subscription](#121-azure-environment-and-subscription)
-    - [1.2.3 Software Requirements](#123-software-requirements)
-- [1.3 Create the Azure Resource Group](#13-create-the-azure-resource-group)
-- [1.4 Create the Azure IoT Hub instance](#14-create-the-azure-iot-hub-instance)
-- [1.5 Create the Azure Service Bus Topic](#15-create-the-azure-service-bus-topic)
-- [1.6 Create the Azure SQL Database](#16-create-the-azure-sql-database)
-    - [1.6.1 Creating the Azure SQL Server and Database](#161-creating-the-azure-sql-server-and-database)
-    - [1.6.2 Create the Azure SQL table to persist your IoT telemetry](#162-create-the-azure-sql-table-to-persist-your-iot-telemetry)
-- [1.7 Create the Azure Stream Analytics Job](#17-create-the-azure-stream-analytics-job)
-    - [1.7.1 Create the Job](#171-create-the-job)
-    - [1.7.2 Add an Input](#172-add-an-input)
-    - [1.7.3 Adding Outputs](#173-adding-outputs)
-        - [1.7.3.1 Add the Power BI Output](#1731-add-the-power-bi-output)
-        - [1.7.3.2 Add the Service Bus Output](#1732-add-service-bus-output)
-        - [1.7.3.3 Add the Azure SQL Output](#1733-add-the-azure-sql-output)
-    - [1.7.4 Write the Query](#174-write-the-query)
-    - [1.7.5 Run the Job](#175-run-the-job)
-- [1.8 Create Notification Flow](#18-create-the-notification-flow)
-    - [1.8.1 Using Azure Logic Apps](#181-using-azure-logic-apps)
-    - [1.8.2 Using Microsoft Flow](#182-using-microsoft-flow)
-- [1.9 Create a Power BI Dashboard and Report](#19-create-a-power-bi-dashboard-and-report)
-
-## 1.1 Tutorial Overview
+## Tutorial Overview
 
 In this tutorial, you'll be doing the following:
 - Creating an Azure Service Bus namespace and topic.
@@ -34,14 +9,14 @@ In this tutorial, you'll be doing the following:
 - Peristing streaming data into Azure SQL
 - Creating a Power BI dashboard leveraging both real-time and historical data
 
-## 1.2 Before Starting
+## Before Starting
 
-### 1.2.1 Azure Environment and Subscription
+### Azure Environment and Subscription
 
 You'll need an active Azure tenant with an enabled Azure subscription.  It's good practice to create the Azure services for this tutorial
 in a single resource group.
 
-### 1.2.3 Software Requirements
+### Software Requirements
 
 - To create the Azure SQL table for historical data storage, you'll need [Visual Studio](https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx)
 and the SQL Data Explorer add-in for Visual Studio, or the [SQL Management Studio](https://msdn.microsoft.com/en-us/library/mt238290.aspx).
@@ -50,7 +25,7 @@ is a simpler tool to leverage. I recommend it even if you're using Visual Studio
 - The Power BI Desktop app is optional. This tutorial, however, will show how dashboards and reports can be created
 within the Power BI web portal.
 
-## 1.3 Create the Azure Resource Group
+## Create the Azure Resource Group
 Azure Resource Group's provide a number of useful capabilities. One of the primary is to organize your Azure service instances into
 logical groups. Creating a single Resource Group that you'll use for this effort will prove very valuable.
 
@@ -68,7 +43,7 @@ logical groups. Creating a single Resource Group that you'll use for this effort
 As you add additional Azure services, it's often easiest to simply add them directly from the Resource Group using the
 Add button at the top of your Resource Group blade.
 
-## 1.4 Create the Azure IoT Hub instance
+## Create the Azure IoT Hub instance
 If you've not already provisioned an instance of the Azure IoT Hub that you can leverage for this purpose, go ahead and do so.
 
 - - In the [Azure Management Portal](https://portal.azure.com):
@@ -91,7 +66,7 @@ If you've not already provisioned an instance of the Azure IoT Hub that you can 
         - Location: Select the appropriate Microsoft Data Center location.
         - Click the Create button.
 
-## 1.x Use the Azure IoT Device Explorer to Register your Device
+## Use the Azure IoT Device Explorer to Register your Device
 
 - Download and install the [Azure IoT Device Explorer](https://github.com/Azure/azure-iot-sdks/releases/download/2016-11-17/SetupDeviceExplorer.msi)
 - Open the Device Explorer.
@@ -104,10 +79,10 @@ and click the Update button.
 - Provide a Device ID and click the Create button.
 - Your device is now registered with Azure IoT Hub.
 
-## 1.x Create the .Net Windows Form IoT Device Simulator
+## Create the .Net Windows Form IoT Device Simulator
 If your lab does not include an actual IoT device, the following Device Simulator will assist you in understanding 
 the core concepts of devices send data to Azure IoT Hub and receive commands. These instructions assume a working familiarity
-with Visual Studio.
+with Visual Studio. Code for this simulator as a reference is located [here](https://github.com/jefferybennett/labs/tree/master/AzureIoTDay1/IoTDeviceSimulator).
 
 - Open Visual Studio and create a new Windows Form project.
 - Using the Nuget Package Manager, install the package "Microsoft.Azure.Devices.Client".
@@ -123,11 +98,21 @@ and "Humidity".
         public decimal Humidity { get; set; }
     }
 ```
+- Add a class level variable in the Form class for the Device Client:
+```csharp
+private static DeviceClient _deviceClient;
+```
+- Add a method to create the DeviceClient:
+```csharp
+_deviceClient = DeviceClient.Create(TextboxIoTHubHostname.Text,
+                new DeviceAuthenticationWithRegistrySymmetricKey(
+                    TextboxDeviceId.Text,
+                    TextboxPrimaryKey.Text), TransportType.Mqtt);
+```
 - Add a method like the following to send the telemetry and wire to your event handler:
 ```csharp
         private async Task<bool> SendTelemetry(decimal temperature, decimal humidity)
         {
-            DeviceClient deviceClient;
             string messageString;
             Microsoft.Azure.Devices.Client.Message message;
 
@@ -151,9 +136,54 @@ and "Humidity".
         }
 ```
 
+## Receive Asynchronous Commands
+- After the calling the DeviceClient Create method, add the following code:
+```csharp
+    _deviceClient.OpenAsync();
+    ReceiveCommands(_deviceClient);
+```
+- Add the ReceiveCommands method:
+```csharp
+    static async Task ReceiveCommands(DeviceClient deviceClient)
+        {
+            Microsoft.Azure.Devices.Client.Message receivedMessage = null;
 
+            while (true)
+            {
+                try
+                {
+                    receivedMessage = await deviceClient.ReceiveAsync(TimeSpan.FromSeconds(1));
 
-## 1.5 Create the Azure Service Bus Topic
+                    if (receivedMessage != null)
+                    {
+                        string messageData = Encoding.ASCII.GetString(receivedMessage.GetBytes());
+                        
+                        MessageBox.Show(string.Format("\t{0}> Received message: {1}", DateTime.Now.ToLocalTime(), messageData));
+
+                        int propCount = 0;
+                        foreach (var prop in receivedMessage.Properties)
+                        {
+                            MessageBox.Show(string.Format("\t\tProperty[{0}> Key={1} : Value={2}", propCount++, prop.Key, prop.Value));
+                        }
+
+                        await deviceClient.CompleteAsync(receivedMessage);
+                    }
+                }
+                finally
+                {
+                    if (receivedMessage != null)
+                    {
+                        receivedMessage.Dispose();
+                    }
+                }
+            }
+        }
+```
+
+## Receive Direct Methods
+To complete this step, follow the steps documented [here](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-csharp-node-direct-methods).
+
+## Create the Azure Service Bus Topic
 (Currently, this is easiest to accomplish in the old [Azure Management Portal](https://manage.windowsazure.com))
 
 - From the left-side menu, click Service Bus (which is eleventh from the top of this menu).
@@ -178,9 +208,9 @@ the right arrow next to its name. Then click Topics.
 - In the Add a new subscription dialog, enter a subscription name, and click the right arrow.
 - Review default subscription settings, and click the checkmark icon to complete.
 
-## 1.6 Create the Azure SQL Database
+## Create the Azure SQL Database
 
-#### 1.6.1. Creating the Azure SQL Server and Database
+### Creating the Azure SQL Server and Database
 If you've not already done so, you'll need to create the Azure SQL instance.
 
 - In the Azure Portal, click the + New button > Data + Storage and select **SQL Database**.
@@ -207,7 +237,7 @@ It'll take a few minutes for the Deployment process to complete.
 - Click the Add client IP button. This will add your current IP address to server firewall approved list, enabling you to
 connect to the database via Visual Studio or SQL Management Studio.
 
-#### 1.6.2 Create the Azure SQL table to persist your IoT telemetry
+### Create the Azure SQL table to persist your IoT telemetry
 
 (Use the [Azure Management Portal](https://portal.azure.com) for these steps.)
 
@@ -257,7 +287,7 @@ are below these.
 (Currently, these steps are easiest (and for Stream Analytics, best) to accomplish in the old 
 [Azure Management Portal](https://manage.windowsazure.com))
 
-### 1.7.1 Create the Job
+### Create the Job
 - In the left hand menu, select Stream Analytics.
 - In the lower left hand corner, click the +New icon.
 - Select Stream Analytics > Quick Create and complete the following fields:
@@ -270,7 +300,7 @@ are below these.
 The job will take a few minutes to deploy, after which you can select it your list of Stream Analytics jobs by clicking
 the arrow next to its name.
 
-### 1.7.2 Add an input
+### Add an input
 - After selecting the job in Stream Analytics list, select Inputs.
 - Click the Add Input icon in the bottom menu.
 - In the Add an Input dialog, complete the following:
@@ -284,10 +314,10 @@ the arrow next to its name.
     - Click the right arrow.
     - Review serialization settings and click the complete checkmark icon.
 
-### 1.7.3 Adding Outputs
+### Adding Outputs
 To add Ouputs to your Stream Analytics job, you'll need to be in the Job and then click Outputs.
 
-#### 1.7.3.1 Add the Power BI Output
+#### Add the Power BI Output
 - In the bottom menu, click the Add Output icon.
 - Select Power BI, and click the right arrow icon.
 - In Authorize Connection, click the Authorize Now link and enter the credentials for the Office 365 account you wish
@@ -299,7 +329,7 @@ to use for Power BI. Ensure you click the Sign-In button and that your credentia
     - Workspace: Select the workspace in Power BI where the dataset and table will be created.
     - Click the checkmark icon to complete.
 
-#### 1.7.3.2 Add the Service Bus Output
+#### Add the Service Bus Output
 - In the bottom menu, click the Add Output icon.
 - Select Service Bus Topic, and click the right arrow icon.
 - In Topic Settings, complete the following fields:
@@ -311,7 +341,7 @@ to use for Power BI. Ensure you click the Sign-In button and that your credentia
     - Topic Policy Name: This value should have a default value.
 - Review Serialization Settings and click the checkmark icon to complete.
 
-#### 1.7.3.3 Add the Azure SQL Output
+#### Add the Azure SQL Output
 **TIP**: If you're unsure of the exact schema of input data from Azure IoT Hub, it's helpful to leverage Azure Stream Analytics to briefly
 output telemetry to a BLOB container in Azure storage. This will enable you to see the schema and ensure your data output to Azure SQL
 is mapped properly from your Azure Stream Analytics job. Additionally, this will provide you test data to test your Stream Analytics
@@ -329,7 +359,7 @@ query.
     - Username: Enter the username for the Azure SQL server.
     - Password: Enter the password for the Azure SQL server.
 
-### 1.7.4 Write the Query
+### Write the Query
 To write/edit your query, you'll need to be in the Stream Analytics Job and then click Query. While you can certainly use
 the Management Portal query window to write and edit your query, I find it a best practice to leverage a tool like
 [Visual Code](https://code.visualstudio.com) to write your query first, especially because I can leverage a source control
@@ -346,7 +376,7 @@ With RawTelemetryGroupedByMinute AS (
         Avg(Humidity) As Pressure
     FROM
         iothub TIMESTAMP BY EventProcessedUtcTime  
-    Group By DeviceId, PumpNo, TumblingWindow(minute, 1)
+    Group By DeviceId, TumblingWindow(minute, 1)
 ),
 Alarms AS (
     SELECT DeviceId, 'HighTemperatureAlarm' As AlarmType,
@@ -364,13 +394,13 @@ select * into sql from RawTelemetryGroupedByMinute
 select * into servicebusalarm from Alarms
 ```
 
-### 1.7.5 Run the Job
+### Run the Job
 
-## 1.8 Create the Notification Flow
+## Create the Notification Flow
 
-### 1.8.1 Using Azure Logic Apps
+### Using Azure Logic Apps
 
-### 1.8.2 Using Microsoft Flow
+### Using Microsoft Flow
 
 #### Create a new Flow
 

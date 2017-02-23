@@ -16,10 +16,58 @@ namespace IoTDeviceSimulator
 {
     public partial class DeviceForm : Form
     {
+        private static DeviceClient _deviceClient;
 
         public DeviceForm()
         {
             InitializeComponent();
+        }
+
+        private void ButtonConnectDevice_Click(object sender, EventArgs e)
+        {
+            _deviceClient = DeviceClient.Create(TextboxIoTHubHostname.Text,
+                new DeviceAuthenticationWithRegistrySymmetricKey(
+                    TextboxDeviceId.Text,
+                    TextboxPrimaryKey.Text), TransportType.Mqtt);
+            ButtonSendOnce.Enabled = true;
+
+            _deviceClient.OpenAsync();
+            ReceiveCommands(_deviceClient);
+        }
+
+        static async Task ReceiveCommands(DeviceClient deviceClient)
+        {
+            Microsoft.Azure.Devices.Client.Message receivedMessage = null;
+
+            while (true)
+            {
+                try
+                {
+                    receivedMessage = await deviceClient.ReceiveAsync(TimeSpan.FromSeconds(1));
+
+                    if (receivedMessage != null)
+                    {
+                        string messageData = Encoding.ASCII.GetString(receivedMessage.GetBytes());
+                        
+                        MessageBox.Show(string.Format("\t{0}> Received message: {1}", DateTime.Now.ToLocalTime(), messageData));
+
+                        int propCount = 0;
+                        foreach (var prop in receivedMessage.Properties)
+                        {
+                            MessageBox.Show(string.Format("\t\tProperty[{0}> Key={1} : Value={2}", propCount++, prop.Key, prop.Value));
+                        }
+
+                        await deviceClient.CompleteAsync(receivedMessage);
+                    }
+                }
+                finally
+                {
+                    if (receivedMessage != null)
+                    {
+                        receivedMessage.Dispose();
+                    }
+                }
+            }
         }
 
         private async void ButtonSendOnce_Click(object sender, EventArgs e)
@@ -48,11 +96,10 @@ namespace IoTDeviceSimulator
 
         private async Task<bool> SendTelemetry(decimal temperature, decimal humidity)
         {
-            DeviceClient deviceClient;
             string messageString;
             Microsoft.Azure.Devices.Client.Message message;
 
-            deviceClient = DeviceClient.Create(TextboxIoTHubHostname.Text,
+            _deviceClient = DeviceClient.Create(TextboxIoTHubHostname.Text,
                 new DeviceAuthenticationWithRegistrySymmetricKey(
                     TextboxDeviceId.Text,
                     TextboxPrimaryKey.Text));
@@ -66,7 +113,7 @@ namespace IoTDeviceSimulator
             messageString = JsonConvert.SerializeObject(telemetry);
             message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
 
-            await deviceClient.SendEventAsync(message);
+            await _deviceClient.SendEventAsync(message);
 
             return true;
         }
