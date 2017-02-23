@@ -1,14 +1,5 @@
 # Azure IoT Day 1 Lab: IoT Telemetry, Commands, Stream Analytics, Power BI and Business Events / Notifications
 
-## Tutorial Overview
-
-In this tutorial, you'll be doing the following:
-- Creating an Azure Service Bus namespace and topic.
-- Creating an Azure Stream Analytics job, leveraging Azure IoT Hub as an input and the Service Bus topic as an output.
-- Using Azure Logic Apps or Microsoft Flow to accept the message from Stream Analytics and notify an user of it.
-- Peristing streaming data into Azure SQL
-- Creating a Power BI dashboard leveraging both real-time and historical data
-
 ## Before Starting
 
 ### Azure Environment and Subscription
@@ -23,7 +14,7 @@ and the SQL Data Explorer add-in for Visual Studio, or the [SQL Management Studi
 If you're a Visual Studio user and don't plan to leverage its many other development capabilities, SQL Management Studio
 is a simpler tool to leverage. I recommend it even if you're using Visual Studio as well.
 - The Power BI Desktop app is optional. This tutorial, however, will show how dashboards and reports can be created
-within the Power BI web portal.
+within the Power BI web portal. You can download it [here](https://www.microsoft.com/en-us/download/details.aspx?id=45331).
 
 ## Create the Azure Resource Group
 Azure Resource Group's provide a number of useful capabilities. One of the primary is to organize your Azure service instances into
@@ -67,6 +58,8 @@ If you've not already provisioned an instance of the Azure IoT Hub that you can 
         - Click the Create button.
 
 ## Use the Azure IoT Device Explorer to Register your Device
+
+- **NOTE** - If you're utilizing the Azure IoT Suite Remote Monitoring solution, register your device in its web portal.
 
 - Download and install the [Azure IoT Device Explorer](https://github.com/Azure/azure-iot-sdks/releases/download/2016-11-17/SetupDeviceExplorer.msi)
 - Open the Device Explorer.
@@ -318,6 +311,9 @@ the arrow next to its name.
 To add Ouputs to your Stream Analytics job, you'll need to be in the Job and then click Outputs.
 
 #### Add the Power BI Output
+The following documentation can assist in leveraging Stream Analytics with Power BI,
+located [here](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-power-bi-dashboard).
+
 - In the bottom menu, click the Add Output icon.
 - Select Power BI, and click the right arrow icon.
 - In Authorize Connection, click the Authorize Now link and enter the credentials for the Office 365 account you wish
@@ -380,7 +376,7 @@ With RawTelemetryGroupedByMinute AS (
 ),
 Alarms AS (
     SELECT DeviceId, 'HighTemperatureAlarm' As AlarmType,
-    CONCAT('High Temperature identified on Device ', DeviceId, ' [Pump #', PumpNo, '] over last 10 minutes.') as AlarmDetail,
+    CONCAT('High Temperature identified on Device ', DeviceId, ' over last 10 minutes.') as AlarmDetail,
     DateAdd(minute, -10, DateAdd(hour, -7, System.TimeStamp)) As WindowStart,
     DateAdd(hour, -7, System.TimeStamp) AS WindowEnd, COUNT(*) AS EventCount, 10 AS WindowDurationInMinutes
     FROM iothub TIMESTAMP BY EventProcessedUtcTime
@@ -400,9 +396,6 @@ select * into servicebusalarm from Alarms
 
 ### Using Azure Logic Apps
 
-### Using Microsoft Flow
-
-#### Create a new Flow
 
 #### Add the Service Bus Topic
 
@@ -423,4 +416,4 @@ Endpoint=sb://sbtesting.servicebus.windows.net/;SharedAccessKeyName=RootManageSh
 
     
 
-## 1.9 Create a Power BI Dashboard and Report
+## Create a Power BI Dashboard and Report
