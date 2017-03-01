@@ -4018,7 +4018,7 @@
             "{1525181F-901A-416C-8A58-119130FE478E}:_31042ED37D484B3F8C6B7E42B549A220"
             {
             "Name" = "8:#1916"
-            "AlwaysCreate" = "11:FALSE"
+            "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Property" = "8:DesktopFolder"
@@ -4052,9 +4052,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Installer"
+        "ProductName" = "8:BRDataSampler"
         "ProductCode" = "8:{87CA1993-DB05-4026-83AB-88C336881F93}"
-        "PackageCode" = "8:{78F590A4-2F56-4B36-A4CE-C847CE29D522}"
+        "PackageCode" = "8:{31B225E5-1F52-4F0E-8287-60F91B3DEC10}"
         "UpgradeCode" = "8:{FA7FFB97-0A1C-48E7-9ED0-9C62E22D6173}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -4062,14 +4062,14 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Default Company Name"
+        "Manufacturer" = "8:BRDataSampler"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Installer"
+        "Title" = "8:BRDataSampler"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Default Company Name"
+        "ARPCONTACT" = "8:BRDataSampler"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:"
+        "ARPCOMMENTS" = "8:Azure IoT Hub Data Sampler"
         "ARPURLINFOABOUT" = "8:"
         "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
@@ -4174,6 +4174,20 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C8944D887C364E2EB2BE702FBE64BBF5"
+            {
+            "Name" = "8:BRDataSampler"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_8E2896B043D546E09F3983DAC8C47C08"
+            "Folder" = "8:_31042ED37D484B3F8C6B7E42B549A220"
+            "WorkingFolder" = "8:_2ADCFA30C780488DB9FBDB4FA558AE7A"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {

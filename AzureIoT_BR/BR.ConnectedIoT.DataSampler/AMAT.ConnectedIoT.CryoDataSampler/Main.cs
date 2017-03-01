@@ -171,7 +171,14 @@ namespace AMAT.ConnectedIoT.CryoDataSampler
             messageString = JsonConvert.SerializeObject(telemetry);
             message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(messageString));
 
-            await deviceClient.SendEventAsync(message);
+            try
+            {
+                await deviceClient.SendEventAsync(message);
+            }
+            catch (Exception ex)
+            {
+                return true;
+            }
 
             return true;
 
