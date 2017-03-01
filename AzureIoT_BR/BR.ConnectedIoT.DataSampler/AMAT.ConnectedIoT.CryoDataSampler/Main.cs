@@ -64,17 +64,11 @@ namespace AMAT.ConnectedIoT.CryoDataSampler
             chart1.Series["Inverter Frequency"].MarkerColor = Color.Black;
             chart1.Series["Inverter Frequency"].Color = Color.Black;
 
-            chart1.Series.Add("Pressure Threshold");
-            chart1.Series["Pressure Threshold"].ChartType = SeriesChartType.FastLine;
-            chart1.Series["Pressure Threshold"].MarkerStyle = MarkerStyle.None;
-            chart1.Series["Pressure Threshold"].MarkerColor = Color.Red;
-            chart1.Series["Pressure Threshold"].Color = Color.Red;
-
-            chart1.Series.Add("Frequency Threshold");
-            chart1.Series["Frequency Threshold"].ChartType = SeriesChartType.FastLine;
-            chart1.Series["Frequency Threshold"].MarkerStyle = MarkerStyle.None;
-            chart1.Series["Frequency Threshold"].MarkerColor = Color.Blue;
-            chart1.Series["Frequency Threshold"].Color = Color.Blue;
+            chart1.Series.Add("Temperature Threshold");
+            chart1.Series["Temperature Threshold"].ChartType = SeriesChartType.FastLine;
+            chart1.Series["Temperature Threshold"].MarkerStyle = MarkerStyle.None;
+            chart1.Series["Temperature Threshold"].MarkerColor = Color.Red;
+            chart1.Series["Temperature Threshold"].Color = Color.Red;
 
             LabelTemp.Text = "0";
             LabelT2.Text = "0";
@@ -85,22 +79,20 @@ namespace AMAT.ConnectedIoT.CryoDataSampler
         private async void timer1_Tick(object sender, EventArgs e)
         {
             await EventTelemetry(T1, T2, Pressure, Frequency);
-            TextBoxMessagesSent.Text = (Convert.ToInt32(TextBoxMessagesSent.Text)+4).ToString();
+            TextBoxMessagesSent.Text = (Convert.ToInt32(TextBoxMessagesSent.Text)+1).ToString();
 
             // Data array
             int[] temp1Array = { T1, 1 };
             int[] temp2Array = { T2, 1 };
             int[] pressureArray = { Pressure, 1 };
             int[] frequencyArray = { Frequency, 1 };
-            int[] sv1Array = { 75, 1 };
-            int[] resetArray = { 60, 1 };
+            int[] sv1Array = { 90, 1 };
 
             chart1.Series[0].Points.AddY(temp1Array[0]);
             chart1.Series[1].Points.AddY(temp2Array[0]);
             chart1.Series[2].Points.AddY(pressureArray[0]);
             chart1.Series[3].Points.AddY(frequencyArray[0]);
             chart1.Series[4].Points.AddY(sv1Array[0]);
-            chart1.Series[5].Points.AddY(resetArray[0]);
 
         }
 
