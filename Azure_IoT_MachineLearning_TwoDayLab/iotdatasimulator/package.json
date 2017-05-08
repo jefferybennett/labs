@@ -1,0 +1,19 @@
+{
+  "name": "amatiotconsole",
+  "version": "1.0.0",
+  "description": "Simple IoT data generator",
+  "main": "index.js",
+  "dependencies": {
+    "async": "^2.3.0",
+    "azure-iot-device": "^1.1.9",
+    "azure-iot-device-mqtt": "^1.1.9",
+    "azure-iothub": "^1.1.9",
+    "terminal-kit": "^1.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
