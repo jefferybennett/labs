@@ -1,11 +1,13 @@
-# Applied Materials Azure IoT Day 1 Hackathon: IoT Telemetry, Real-Time Analysis and Workflow
+# Azure IoT / Machine Learning 2-Day Lab
 
-### Azure Environment and Subscription
+## Day 1 - Azure IoT - IoT Telemetry, Real-Time Analysis and Workflow
 
-An Office 365 / Azure account has been created for you using the username
-[firstname].[lastname]@msp342493.onmicrosoft.com. The password will be provided on the room's whiteboard.
-We recommend that you an in-private browsing session (IE, Edge, Chrome) so there's no conflicts
-with your existing corporate credentials.
+## Day 2 - Azure Machine Learning
+
+The following lab developed by Jarek Kazmierczak of the Microsoft Mountain View MTC
+provides an excellent hands-on lab for preventative maintenance for Azure ML.
+
+The lab is located [here](https://github.com/microsoft/amlworkshop) on GitHub.
 
 ### Software Requirements
 
@@ -46,10 +48,6 @@ and click the Update button.
 - Click the Data tab.
 - Select your device in the Device ID dropdown, click the Enable checkbox next to Consumer Group and enter your first name.
 (A consumer group using your first name will have been pre-created)
-
-```text
-HostName=amatiotthons1.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=qh/9k+LOOO+RBf9XVdO4w8q/LSZIUQVXttBzIU48ifM=
-```
 
 ## Use the Azure IoT Device Explorer to monitor data coming from your Device
 
